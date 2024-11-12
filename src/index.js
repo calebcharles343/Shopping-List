@@ -6,15 +6,35 @@ import errorHandler from "./middleware/errorHandler.js";
 
 import createUserTable from "./data/createUserTable.js";
 import userRouter from "./routes/userRoutes.js";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 
 dotenv.config();
+
+process.on("uncaughtException", (err) => {
+  console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
+  console.log(err.name, err.message);
+  process.exit(1); //graceful shutdown
+});
 
 const app = express();
 const port = process.env.PORT || 3001;
 
+////////////////////////////////////////////////////////////
 // Middlewares
-app.use(express.json());
+////////////////////////////////////////////////////////////
+app.use(helmet());
+app.use(express.json({ limit: "10kb" }));
 app.use(cors());
+
+// Limit requests from same API (bruteforce and denial of service attacks protection)
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: "Too many requests from this IP, please try again in an hour!",
+});
+app.use("/api", limiter); // affects all routes starting with '/api'
+// Body parser, reading data from body into req.body not greater than 10kb
 
 // Routes
 app.use("/api/v1/users", userRouter);
@@ -23,11 +43,6 @@ app.use("/api/v1/users", userRouter);
 //////////////////////////////////////////////////////////////////////////////////////////
 //GLOBAL UNCAUGHT EXCEPTION ERROR HANDLER as (Last Safety Net) i.e. SYNCHRONOUSE CODE
 /////////////////////////////////////////////////////////////////////////////////////////
-process.on("uncaughtException", (err) => {
-  console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
-  console.log(err.name, err.message);
-  process.exit(1); //graceful shutdown
-});
 
 app.use(errorHandler);
 

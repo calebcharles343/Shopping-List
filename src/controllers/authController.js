@@ -13,6 +13,9 @@ const signToken = (id) => {
   });
 };
 
+/*////////////////////////////////////// */
+/*////////////////////////////////////// */
+
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user.id);
 
@@ -38,6 +41,9 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 
+/*////////////////////////////////////// */
+/*////////////////////////////////////// */
+
 export const signup = catchAsync(async (req, res, next) => {
   const { name, email, password, confirm_password, role } = req.body;
 
@@ -57,6 +63,9 @@ export const signup = catchAsync(async (req, res, next) => {
   createSendToken(newUser.rows[0], 201, res);
 });
 
+/*////////////////////////////////////// */
+/*////////////////////////////////////// */
+
 export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -75,6 +84,9 @@ export const login = catchAsync(async (req, res, next) => {
 
   createSendToken(user, 200, res);
 });
+
+/*////////////////////////////////////// */
+/*////////////////////////////////////// */
 
 export const protect = catchAsync(async (req, res, next) => {
   let token;
@@ -111,6 +123,8 @@ export const protect = catchAsync(async (req, res, next) => {
   next();
 });
 
+/*////////////////////////////////////// */
+/*////////////////////////////////////// */
 export const restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
@@ -122,6 +136,9 @@ export const restrictTo = (...roles) => {
     next();
   };
 };
+
+/*////////////////////////////////////// */
+/*////////////////////////////////////// */
 
 export const forgotPassword = catchAsync(async (req, res, next) => {
   const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [
@@ -178,6 +195,9 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
   }
 });
 
+/*////////////////////////////////////// */
+/*////////////////////////////////////// */ 5;
+
 export const resetPassword = catchAsync(async (req, res, next) => {
   const hashedToken = crypto
     .createHash("sha256")
@@ -207,6 +227,9 @@ export const resetPassword = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+/*////////////////////////////////////// */
+/*////////////////////////////////////// */
+
 export const updatePassword = catchAsync(async (req, res, next) => {
   const userResult = await pool.query("SELECT * FROM users WHERE id = $1", [
     req.user.id,
@@ -226,3 +249,6 @@ export const updatePassword = catchAsync(async (req, res, next) => {
 
   createSendToken(user, 200, res);
 });
+
+/*////////////////////////////////////// */
+/*////////////////////////////////////// */
