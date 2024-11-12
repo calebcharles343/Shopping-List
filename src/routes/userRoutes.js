@@ -52,6 +52,10 @@ userRouter.get(
 /*//////////////////////*/
 userRouter.route("/").get(protect, getAllUsers);
 
-userRouter.route("/:id").get(getUserById).patch(updateMe).delete(deleteUser);
+userRouter
+  .route("/:id")
+  .get(protect, getUserById)
+  .patch(updateMe)
+  .delete(deleteUser);
 
 export default userRouter;

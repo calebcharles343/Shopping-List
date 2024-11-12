@@ -1,7 +1,7 @@
 import { AppError } from "../utls/appError.js";
 
 const handleJWTError = () =>
-  new AppError("Invalid token. Please log in again!", 401);
+  new AppError("Invalid or expired token! Please log in again.", 401);
 
 const handleJWTExpiredError = () =>
   new AppError("Your token has expired! Please log in again.", 401);
@@ -36,8 +36,10 @@ const errorHandler = (err, req, res, next) => {
   if (isProduction) {
     let error = { ...err, message: err.message };
 
-    if (error.name === "JsonWebTokenError") error = handleJWTError();
-    if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
+    console.log(error, "xxxxxx");
+
+    if (error.message === "jwt malformed") error = handleJWTError();
+    if (error.message === "jwt expired") error = handleJWTExpiredError();
 
     // Send operational error message; generic message for non-operational errors
     return res.status(error.statusCode).json({
