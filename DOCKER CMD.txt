@@ -1,0 +1,11 @@
+DOCKER CMD:
+
+1, docker pull postgres
+
+2, docker run --name postgres-DB -e POSTGRES_PASSWORD=your_password -p 5432:5432 -d postgres
+
+3, docker ps : check list of containers
+
+4, docker inspect containerID : check which ip address container is runnin on
+
+5, docker exec -it postgres-DB psql -U postgres : connect to postgres container
