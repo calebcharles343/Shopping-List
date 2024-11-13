@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import { catchAsync } from "../utls/catchAsync.js";
 import sendEmail from "../utls/email.js";
 import { AppError } from "../utls/appError.js";
+import sendMail from "../utls/sendmail.js";
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -146,6 +147,8 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
   ]);
   const user = userResult.rows[0];
 
+  console.log(user.email);
+
   if (!user) {
     return next(new AppError("There is no user with this email address.", 404));
   }
@@ -173,6 +176,12 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
     await sendEmail({
       email: user.email,
       subject: "Your password reset token (valid for 10 min)",
+      message,
+    });
+
+    await sendMail({
+      userMail: user.email,
+
       message,
     });
 
