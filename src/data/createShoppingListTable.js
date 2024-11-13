@@ -1,3 +1,5 @@
+import pool from "../config/db.js";
+
 const createShoppingListTable = async () => {
   const queryText = `CREATE TABLE IF NOT EXISTS shopping_list (
     id SERIAL PRIMARY KEY,

@@ -8,6 +8,8 @@ import createUserTable from "./data/createUserTable.js";
 import userRouter from "./routes/userRoutes.js";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
+import shopItemsRouter from "./routes/shopItemsRoutes.js";
+import createShopItemsTable from "./data/createShopItemsTable.js";
 
 dotenv.config();
 
@@ -37,7 +39,8 @@ app.use("/api", limiter); // affects all routes starting with '/api'
 // Body parser, reading data from body into req.body not greater than 10kb
 
 // Routes
-app.use("/api/v1/users", userRouter);
+app.use("/api/v1/shopping-list/users", userRouter);
+app.use("/api/v1/shopping-list/items", shopItemsRouter);
 
 // Error handling middleware
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -48,6 +51,7 @@ app.use(errorHandler);
 
 // create table before starting Server
 createUserTable();
+createShopItemsTable();
 
 // Testing POSTGRES Connection
 pool.query("SELECT current_database(), NOW()", (err, res) => {
