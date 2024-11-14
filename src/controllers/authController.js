@@ -131,6 +131,7 @@ export const protect = catchAsync(async (req, res, next) => {
 
   // 1) Verify token
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  console.log("Decoded token:", decoded);
 
   // 2) Check if user still exists
   const userResult = await pool.query("SELECT * FROM users WHERE id = $1", [

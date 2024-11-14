@@ -11,18 +11,14 @@
   "consumes": ["application/json", "multipart/form-data"],
   "produces": ["application/json"],
   "securityDefinitions": {
-    "AuthToken": {
+    "Bearer": {
       "type": "apiKey",
-      "name": "authorization",
+      "name": "Authorization",
       "in": "header",
-      "description": "The token for authentication"
+      "description": "Enter your bearer token in the format **Bearer &lt;token&gt;**"
     }
   },
-  "security": [
-    {
-      "AuthToken": []
-    }
-  ],
+  "security": [{ "Bearer": [] }],
   "paths": {
     "/users/signup": {
       "post": {
@@ -84,6 +80,27 @@
         }
       }
     },
+
+    "/users": {
+      "get": {
+        "tags": ["Get users"],
+        "description": "Get all user, only the Adim can fetch users, Log in required",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+
+        "responses": {
+          "200": {
+            "description": " Users fetched successfully verified user."
+          },
+          "404": {
+            "description": "Log in required."
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
     "/users/forgotPassword": {
       "post": {
         "tags": ["User Auth"],
@@ -116,15 +133,21 @@
     "/users/resetPassword/{token}": {
       "patch": {
         "tags": ["User Auth"],
-        "description": "Verify user email. All users accounts must have valid email addresses and therefore must be verified before continuing to login. No user input required. Just send the token sent in the verification email in the header field of this request. Verification token is valid for 10 minutes.",
+        "description": "Reset password. Reset token is required",
         "consumes": ["application/json"],
         "produces": ["application/json"],
-
         "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The token sent in the verification email"
+          },
           {
             "name": "body",
             "in": "body",
-            "description": "Data required to register the user. name should be all alphabets. The users should only enter their preferred password.",
+            "description": "Data required to reset the password",
             "required": true,
             "schema": {
               "type": "object",
@@ -136,13 +159,13 @@
           }
         ],
         "responses": {
-          "200": { "description": "Password reset Successfully." },
+          "200": { "description": "Password reset successfully." },
           "404": { "description": "No matching user found." },
           "500": { "description": "Server error" }
         }
       }
     },
-    "/users/updateMe/{id}": {
+    "/users/updatePassword": {
       "patch": {
         "tags": ["User Auth"],
         "description": "Update account information.",
@@ -176,6 +199,15 @@
         "tags": ["User Auth"],
         "description": "Delete user information. User information will be deleted based on the userID from the token.",
         "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the user to delete"
+          }
+        ],
         "responses": {
           "200": { "description": "Success" },
           "400": { "description": "Unable to authenticate token" },
