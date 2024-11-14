@@ -1,6 +1,6 @@
 import pool from "../config/db.js";
 
-const createShoppingListTable = async () => {
+const createUserListTable = async () => {
   const queryText = `CREATE TABLE IF NOT EXISTS shopping_list (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
@@ -17,4 +17,4 @@ const createShoppingListTable = async () => {
   }
 };
 
-export default createShoppingListTable;
+export default createUserListTable;
