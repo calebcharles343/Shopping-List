@@ -10,6 +10,8 @@ import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import shopItemsRouter from "./routes/shopItemsRoutes.js";
 import createShopItemsTable from "./data/createShopItemsTable.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "../swagger.json" assert { type: "json" };
 
 dotenv.config();
 
@@ -38,9 +40,24 @@ const limiter = rateLimit({
 app.use("/api", limiter); // affects all routes starting with '/api'
 // Body parser, reading data from body into req.body not greater than 10kb
 
+const options = {
+  customCss:
+    ".swagger-container .swagger-ui { max-width: 1100px; margin: auto; } .swagger-ui .topbar { display: none } .swagger-ui { background: #00000e6; }",
+  customSiteTitle: "SMS API",
+};
+
+// Swagger UI setup
+app.use(
+  "/shopping-list/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument)
+);
+
 // Routes
 app.use("/api/v1/shopping-list/users", userRouter);
 app.use("/api/v1/shopping-list/items", shopItemsRouter);
+
+// Use Swagger UI
 
 // Error handling middleware
 //////////////////////////////////////////////////////////////////////////////////////////
