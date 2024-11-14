@@ -8,6 +8,7 @@ import {
 } from "../controllers/userController.js";
 import validatorUser from "../middleware/inputValidator.js";
 import {
+  changedPasswordAfterToken,
   forgotPassword,
   login,
   protect,
@@ -50,7 +51,7 @@ userRouter.get(
 /*//////////////////////*/
 /*BASIC CRUD ROUTE*/
 /*//////////////////////*/
-userRouter.route("/").get(protect, getAllUsers);
+userRouter.route("/").get(protect, changedPasswordAfterToken, getAllUsers);
 
 userRouter
   .route("/:id")

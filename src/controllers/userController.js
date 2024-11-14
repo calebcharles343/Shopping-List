@@ -24,6 +24,7 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
+/*
 export const createUser = catchAsync(async (req, res, next) => {
   // 1) Create error if user POSTs password data
   if (req.body.password || req.body.passwordConfirm) {
@@ -38,7 +39,7 @@ export const createUser = catchAsync(async (req, res, next) => {
 
   handleResponse(res, 201, "User created successfully", newUser);
 });
-
+*/
 export const getAllUsers = catchAsync(async (req, res, next) => {
   const users = await getAllUsersService();
   handleResponse(res, 200, "Users fetched successfully", users);

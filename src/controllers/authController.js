@@ -4,7 +4,6 @@ import crypto from "crypto";
 import pool from "../config/db.js";
 import bcrypt from "bcrypt";
 import { catchAsync } from "../utls/catchAsync.js";
-import sendEmail from "../utls/email.js";
 import { AppError } from "../utls/appError.js";
 import sendMail from "../utls/sendmail.js";
 
@@ -40,6 +39,32 @@ const createSendToken = (user, statusCode, res) => {
       user,
     },
   });
+};
+
+/*////////////////////////////////////// */
+/*////////////////////////////////////// */
+
+export const changedPasswordAfterToken = (req, res, next) => {
+  const { password_changed_at } = req.user;
+  const JWTTimestamp = req.user.iat; // The token's issued timestamp
+
+  if (password_changed_at) {
+    const changedTimestamp = parseInt(
+      new Date(password_changed_at).getTime() / 1000,
+      10
+    );
+    if (JWTTimestamp < changedTimestamp) {
+      return next(
+        new AppError(
+          "User recently changed password! Please log in again.",
+          401
+        )
+      );
+    }
+  }
+
+  // If no password change or token is still valid, proceed
+  next();
 };
 
 /*////////////////////////////////////// */
@@ -104,8 +129,10 @@ export const protect = catchAsync(async (req, res, next) => {
     );
   }
 
+  // 1) Verify token
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
+  // 2) Check if user still exists
   const userResult = await pool.query("SELECT * FROM users WHERE id = $1", [
     decoded.id,
   ]);
@@ -113,14 +140,14 @@ export const protect = catchAsync(async (req, res, next) => {
 
   if (!currentUser) {
     return next(
-      new AppError(
-        "The user belonging to this token does no longer exist.",
-        401
-      )
+      new AppError("The user belonging to this token no longer exists.", 401)
     );
   }
 
+  // Attach the user and token issued time to the request for future use
   req.user = currentUser;
+  req.user.iat = decoded.iat;
+
   next();
 });
 
@@ -173,15 +200,8 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
 
   try {
-    await sendEmail({
-      email: user.email,
-      subject: "Your password reset token (valid for 10 min)",
-      message,
-    });
-
     await sendMail({
       userMail: user.email,
-
       message,
     });
 
@@ -229,7 +249,7 @@ export const resetPassword = catchAsync(async (req, res, next) => {
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
   await pool.query(
-    "UPDATE users SET password = $1, password_reset_token = NULL, password_reset_expires = NULL WHERE id = $2",
+    "UPDATE users SET password = $1, password_reset_token = NULL, password_reset_expires = NULL, password_changed_at = NOW() + INTERVAL '1 second' WHERE id = $2",
     [hashedPassword, user.id]
   );
 
@@ -251,13 +271,37 @@ export const updatePassword = catchAsync(async (req, res, next) => {
 
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-  await pool.query("UPDATE users SET password = $1 WHERE id = $2", [
-    hashedPassword,
-    req.user.id,
-  ]);
+  // Update password and set `password_changed_at` to current time
+  await pool.query(
+    "UPDATE users SET password = $1, password_changed_at = NOW() WHERE id = $2",
+    [hashedPassword, req.user.id]
+  );
 
   createSendToken(user, 200, res);
 });
 
 /*////////////////////////////////////// */
 /*////////////////////////////////////// */
+
+/*
+export const updatePassword = catchAsync(async (req, res, next) => {
+  const userResult = await pool.query("SELECT * FROM users WHERE id = $1", [
+    req.user.id,
+  ]);
+  const user = userResult.rows[0];
+
+  if (!(await bcrypt.compare(req.body.passwordCurrent, user.password))) {
+    return next(new AppError("Your current password is wrong.", 401));
+  }
+
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+  // Update password and set `password_changed_at` to current time
+  await pool.query(
+    "UPDATE users SET password = $1, password_changed_at = NOW() WHERE id = $2",
+    [hashedPassword, req.user.id]
+  );
+
+  createSendToken(user, 200, res);
+});
+*/
