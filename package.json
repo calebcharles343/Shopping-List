@@ -1,5 +1,5 @@
 {
-  "name": "nodepostgres",
+  "name": "shopping-list",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
@@ -26,5 +26,9 @@
     "pg": "^8.13.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
+  },
+  "engines": {
+    "node": "20.x",
+    "npm": "10.9.0"
   }
 }
