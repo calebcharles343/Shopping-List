@@ -13,6 +13,8 @@ import createShopItemsTable from "./data/createShopItemsTable.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../swagger.json" assert { type: "json" };
 
+("");
+
 dotenv.config();
 
 process.on("uncaughtException", (err) => {
