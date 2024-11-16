@@ -175,8 +175,6 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
   ]);
   const user = userResult.rows[0];
 
-  console.log(user.email);
-
   if (!user) {
     return next(new AppError("There is no user with this email address.", 404));
   }
