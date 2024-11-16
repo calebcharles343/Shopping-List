@@ -5,7 +5,7 @@
     "description": "Comprehensive API documentation for the Shopping List application",
     "version": "1.0.0"
   },
-  "host": "https://shopping-list-f1b6.onrender.com",
+  "host": "shopping-list-f1b6.onrender.com",
   "basePath": "/api/v1/shopping-list/",
   "schemes": ["http", "https"],
   "consumes": ["application/json", "multipart/form-data"],
