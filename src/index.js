@@ -5,7 +5,7 @@ import app from "./app.js"; // Import the app
 dotenv.config();
 
 process.on("uncaughtException", (err) => {
-  console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
+  console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...,", err);
   process.exit(1); // Graceful shutdown
 });
 
