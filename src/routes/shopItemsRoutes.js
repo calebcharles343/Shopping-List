@@ -13,7 +13,7 @@ const shopItemsRouter = express.Router();
 shopItemsRouter.post(
   "/addShopItem",
   protect,
-  restrictTo("admin"),
+  restrictTo("Admin"),
   createShopItem
 );
 
@@ -24,14 +24,14 @@ shopItemsRouter.get("/:id", protect, getShopItembyId);
 shopItemsRouter.patch(
   "/updateShopItem/:id",
   protect,
-  restrictTo("admin"),
+  restrictTo("Admin"),
   updateShopItem
 );
 
 shopItemsRouter.delete(
   "/deleteShopItem/:id",
   protect,
-  restrictTo("admin"),
+  restrictTo("Admin"),
   deleteShopItem
 );
 
