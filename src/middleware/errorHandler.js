@@ -1,4 +1,4 @@
-import { AppError } from "../utls/appError.js";
+import { AppError } from "../utils/appError.js";
 
 const handleJWTError = () =>
   new AppError("Invalid or expired token! Please log in again.", 401);

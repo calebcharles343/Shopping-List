@@ -6,7 +6,7 @@ import {
   getUserByIdService,
   updateUserService,
 } from "../models/userModel.js";
-import { catchAsync } from "../utls/catchAsync.js";
+import { catchAsync } from "../utils/catchAsync.js";
 
 const handleResponse = (res, status, message, data = null) => {
   res.status(status).json({

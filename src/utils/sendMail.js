@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-const sendMail = async (options) => {
+export const sendMail = async (options) => {
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -34,5 +34,3 @@ const sendMail = async (options) => {
     throw new Error("Failed to send email");
   }
 };
-
-export default sendMail;

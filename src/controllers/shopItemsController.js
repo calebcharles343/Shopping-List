@@ -5,7 +5,7 @@ import {
   getShopItemByIdService,
   updateShopItemService,
 } from "../models/ShopItemsModel.js";
-import { catchAsync } from "../utls/catchAsync.js";
+import { catchAsync } from "../utils/catchAsync.js";
 
 const handleResponse = (res, status, message, data = null) => {
   res.status(status).json({

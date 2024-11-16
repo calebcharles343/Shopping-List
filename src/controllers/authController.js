@@ -3,9 +3,9 @@ import { promisify } from "util";
 import crypto from "crypto";
 import pool from "../config/db.js";
 import bcrypt from "bcrypt";
-import { catchAsync } from "../utls/catchAsync.js";
-import { AppError } from "../utls/appError.js";
-import sendMail from "../utls/sendmail.js";
+import { catchAsync } from "../utils/catchAsync.js";
+import { AppError } from "../utils/appError.js";
+import { sendMail } from "../utils/sendMail.js";
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
