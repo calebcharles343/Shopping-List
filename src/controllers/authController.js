@@ -114,6 +114,22 @@ export const login = catchAsync(async (req, res, next) => {
 /*////////////////////////////////////// */
 /*////////////////////////////////////// */
 
+export const logout = (req, res) => {
+  // Invalidate the token by setting an empty cookie
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    expires: new Date(Date.now() + 10 * 1000), // Expire the cookie in 10 seconds
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "Logged out successfully",
+  });
+};
+
+/*////////////////////////////////////// */
+/*////////////////////////////////////// */
+
 export const protect = catchAsync(async (req, res, next) => {
   let token;
   if (

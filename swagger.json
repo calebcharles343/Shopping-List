@@ -5,7 +5,7 @@
     "description": "Comprehensive API documentation for the Shopping List application",
     "version": "1.0.0"
   },
-  "host": "localhost:5002",
+  "host": "https://shopping-list-f1b6.onrender.com",
   "basePath": "/api/v1/shopping-list/",
   "schemes": ["http", "https"],
   "consumes": ["application/json", "multipart/form-data"],
@@ -76,6 +76,19 @@
           "200": { "description": "Login successful." },
           "400": { "description": "Invalid login credentials." },
           "404": { "description": "User not found." },
+          "500": { "description": "Internal server error." }
+        }
+      }
+    },
+    "/users/logout": {
+      "post": {
+        "tags": ["User Auth"],
+        "description": "Initiate a password reset request. An email with a reset token will be sent to the registered email address.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "responses": {
+          "200": { "description": "User logged out successfully." },
+          "404": { "description": "User has to be logged in to log out." },
           "500": { "description": "Internal server error." }
         }
       }
