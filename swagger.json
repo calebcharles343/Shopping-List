@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Shopping List API",
+    "title": "Tunga Shopping List API by Charles Caleb",
     "description": "Comprehensive API documentation for the Shopping List application",
     "version": "1.0.0"
   },
@@ -101,6 +101,28 @@
         "produces": ["application/json"],
         "responses": {
           "200": { "description": "Users retrieved successfully." },
+          "401": { "description": "Unauthorized access." },
+          "500": { "description": "Internal server error." }
+        }
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "tags": ["User Management"],
+        "description": "Retrieve a user by ID. This operation is restricted to admin user.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the user to Retrieve."
+          }
+        ],
+        "responses": {
+          "200": { "description": "User retrieved successfully." },
           "401": { "description": "Unauthorized access." },
           "500": { "description": "Internal server error." }
         }
@@ -217,6 +239,133 @@
           "400": { "description": "Invalid user ID." },
           "401": { "description": "Unauthorized access." },
           "404": { "description": "User not found." },
+          "500": { "description": "Internal server error." }
+        }
+      }
+    },
+    "/items/addShopItem": {
+      "post": {
+        "tags": ["Shop Items"],
+        "description": "Add items to store. Login is required and Restricted to admin user.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Shop items credentials includes item_name and price.",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "item_name": { "type": "string" },
+                "price": { "type": "string" }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Item added successfully." },
+          "400": {
+            "description": "You do not have permission to perform this action"
+          },
+          "404": { "description": "Login Required." },
+          "500": { "description": "Internal server error." }
+        }
+      }
+    },
+    "/items": {
+      "get": {
+        "tags": ["Shop Items"],
+        "description": "Retrieve a list of all shop items. Login is required.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "responses": {
+          "200": { "description": "Items retrieved successfully." },
+          "401": { "description": "Unauthorized access." },
+          "500": { "description": "Internal server error." }
+        }
+      }
+    },
+    "/items/{id}": {
+      "get": {
+        "tags": ["Shop Items"],
+        "description": "Retrieve a shop item by ID. Login is required.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the item to Retrieve."
+          }
+        ],
+        "responses": {
+          "200": { "description": "Item retrieved successfully." },
+          "401": { "description": "Unauthorized access." },
+          "500": { "description": "Internal server error." }
+        }
+      }
+    },
+
+    "/items/updateShopItem/{id}": {
+      "patch": {
+        "tags": ["Shop Items"],
+        "description": "Update a shop item by ID. Login is required and Restricted to admin user",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the item to update."
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "New item details.",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "item_name": { "type": "string" },
+                "price": { "type": "string" }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Item updated successfully." },
+          "404": {
+            "description": "No Item with the proveided ID available in shop."
+          },
+          "500": { "description": "Internal server error." }
+        }
+      }
+    },
+    "/items/deleteShopItem/{id}": {
+      "delete": {
+        "tags": ["Shop Items"],
+        "description": "Delete a shop item. Login is required and Restricted to admin user.",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the item to delete."
+          }
+        ],
+        "responses": {
+          "200": { "description": "item deleted successfully." },
+          "400": { "description": "Invalid item ID." },
+          "401": { "description": "Unauthorized access." },
+          "404": { "description": "item not found." },
           "500": { "description": "Internal server error." }
         }
       }
