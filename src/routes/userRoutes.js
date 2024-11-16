@@ -44,7 +44,7 @@ userRouter.delete("/deleteMe/:id", protect, restrictTo("Admin"), deleteUser);
 userRouter.get(
   "/closedAccounts",
   protect,
-  restrictTo("admin"),
+  restrictTo("Admin"),
   getAllInactiveUsers
 );
 
