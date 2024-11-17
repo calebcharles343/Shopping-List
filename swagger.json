@@ -83,7 +83,7 @@
     "/users/logout": {
       "post": {
         "tags": ["User Auth"],
-        "description": "Log out user. User has to be logged in to logged out.",
+        "description": "Log out user. User has to be logged in to log out.",
         "consumes": ["application/json"],
         "produces": ["application/json"],
         "responses": {
