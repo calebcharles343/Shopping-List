@@ -83,7 +83,7 @@
     "/users/logout": {
       "post": {
         "tags": ["User Auth"],
-        "description": "Initiate a password reset request. An email with a reset token will be sent to the registered email address.",
+        "description": "Log out user. User has to be logged in to logged out.",
         "consumes": ["application/json"],
         "produces": ["application/json"],
         "responses": {
@@ -106,7 +106,7 @@
         }
       }
     },
-    "/user/{id}": {
+    "/users/{id}": {
       "get": {
         "tags": ["User Management"],
         "description": "Retrieve a user by ID. This operation is restricted to admin user.",
