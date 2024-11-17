@@ -23,7 +23,6 @@ const errorHandler = (err, req, res, next) => {
   err.status = err.status || "error";
 
   if (isDevelopment) {
-    console.error("Error:", err);
     // Detailed error response in development
     return res.status(err.statusCode).json({
       status: err.status,
@@ -35,8 +34,6 @@ const errorHandler = (err, req, res, next) => {
 
   if (isProduction) {
     let error = { ...err, message: err.message };
-
-    console.log(error, "xxxxxx");
 
     if (error.message === "jwt malformed") error = handleJWTError();
     if (error.message === "jwt expired") error = handleJWTExpiredError();
