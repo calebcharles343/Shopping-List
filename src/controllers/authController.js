@@ -6,10 +6,11 @@ import bcrypt from "bcrypt";
 import { catchAsync } from "../utils/catchAsync.js";
 import { AppError } from "../utils/appError.js";
 import { sendMail } from "../utils/sendMail.js";
+import { handleResponse } from "../utils/handleResponse.js";
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN, // This should be '1d' or another valid format
+    expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
@@ -21,7 +22,7 @@ const createSendToken = (user, statusCode, res) => {
 
   const cookieOptions = {
     expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 // Convert days to milliseconds
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
   };
@@ -32,12 +33,9 @@ const createSendToken = (user, statusCode, res) => {
 
   res.cookie("jwt", token, cookieOptions);
 
-  res.status(statusCode).json({
-    status: "success",
+  handleResponse(res, statusCode, "Authentication successful", {
     token,
-    data: {
-      user,
-    },
+    user,
   });
 };
 
@@ -46,7 +44,7 @@ const createSendToken = (user, statusCode, res) => {
 
 export const changedPasswordAfterToken = (req, res, next) => {
   const { password_changed_at } = req.user;
-  const JWTTimestamp = req.user.iat; // The token's issued timestamp
+  const JWTTimestamp = req.user.iat;
 
   if (password_changed_at) {
     const changedTimestamp = parseInt(
@@ -63,7 +61,6 @@ export const changedPasswordAfterToken = (req, res, next) => {
     }
   }
 
-  // If no password change or token is still valid, proceed
   next();
 };
 
@@ -79,7 +76,7 @@ export const signup = catchAsync(async (req, res, next) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const userRole = role || "user"; // Default to 'user' if role is not provided
+  const userRole = role || "user";
 
   const newUser = await pool.query(
     "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *",
@@ -115,16 +112,12 @@ export const login = catchAsync(async (req, res, next) => {
 /*////////////////////////////////////// */
 
 export const logout = (req, res) => {
-  // Invalidate the token by setting an empty cookie
   res.cookie("jwt", "", {
     httpOnly: true,
-    expires: new Date(Date.now() + 10 * 1000), // Expire the cookie in 10 seconds
+    expires: new Date(Date.now() + 10 * 1000),
   });
 
-  res.status(200).json({
-    status: "success",
-    message: "Logged out successfully",
-  });
+  handleResponse(res, 200, "Logged out successfully");
 };
 
 /*////////////////////////////////////// */
@@ -145,11 +138,9 @@ export const protect = catchAsync(async (req, res, next) => {
     );
   }
 
-  // 1) Verify token
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
   console.log("Decoded token:", decoded);
 
-  // 2) Check if user still exists
   const userResult = await pool.query("SELECT * FROM users WHERE id = $1", [
     decoded.id,
   ]);
@@ -161,7 +152,6 @@ export const protect = catchAsync(async (req, res, next) => {
     );
   }
 
-  // Attach the user and token issued time to the request for future use
   req.user = currentUser;
   req.user.iat = decoded.iat;
 
@@ -170,6 +160,7 @@ export const protect = catchAsync(async (req, res, next) => {
 
 /*////////////////////////////////////// */
 /*////////////////////////////////////// */
+
 export const restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
@@ -201,7 +192,7 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
     .update(resetToken)
     .digest("hex");
 
-  const resetExpires = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 10 minutes from now, in ISO format
+  const resetExpires = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
   await pool.query(
     "UPDATE users SET password_reset_token = $1, password_reset_expires = $2 WHERE email = $3",
@@ -220,10 +211,7 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
       message,
     });
 
-    res.status(200).json({
-      status: "success",
-      message: "Token sent to email!",
-    });
+    handleResponse(res, 200, "Token sent to email!");
   } catch (err) {
     await pool.query(
       "UPDATE users SET password_reset_token = NULL, password_reset_expires = NULL WHERE email = $1",
@@ -240,7 +228,7 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
 });
 
 /*////////////////////////////////////// */
-/*////////////////////////////////////// */ 5;
+/*////////////////////////////////////// */
 
 export const resetPassword = catchAsync(async (req, res, next) => {
   const hashedToken = crypto
@@ -248,7 +236,6 @@ export const resetPassword = catchAsync(async (req, res, next) => {
     .update(req.params.token)
     .digest("hex");
 
-  // Convert current time to ISO format for PostgreSQL compatibility
   const currentTime = new Date().toISOString();
 
   const userResult = await pool.query(
@@ -286,7 +273,6 @@ export const updatePassword = catchAsync(async (req, res, next) => {
 
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-  // Update password and set `password_changed_at` to current time
   await pool.query(
     "UPDATE users SET password = $1, password_changed_at = NOW() WHERE id = $2",
     [hashedPassword, req.user.id]
@@ -294,29 +280,3 @@ export const updatePassword = catchAsync(async (req, res, next) => {
 
   createSendToken(user, 200, res);
 });
-
-/*////////////////////////////////////// */
-/*////////////////////////////////////// */
-
-/*
-export const updatePassword = catchAsync(async (req, res, next) => {
-  const userResult = await pool.query("SELECT * FROM users WHERE id = $1", [
-    req.user.id,
-  ]);
-  const user = userResult.rows[0];
-
-  if (!(await bcrypt.compare(req.body.passwordCurrent, user.password))) {
-    return next(new AppError("Your current password is wrong.", 401));
-  }
-
-  const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
-  // Update password and set `password_changed_at` to current time
-  await pool.query(
-    "UPDATE users SET password = $1, password_changed_at = NOW() WHERE id = $2",
-    [hashedPassword, req.user.id]
-  );
-
-  createSendToken(user, 200, res);
-});
-*/

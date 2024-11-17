@@ -6,14 +6,7 @@ import {
   updateShopItemService,
 } from "../models/ShopItemsModel.js";
 import { catchAsync } from "../utils/catchAsync.js";
-
-const handleResponse = (res, status, message, data = null) => {
-  res.status(status).json({
-    status,
-    message,
-    data,
-  });
-};
+import { handleResponse } from "../utils/handleResponse.js";
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -50,25 +43,18 @@ export const updateShopItem = catchAsync(async (req, res, next) => {
 
   console.log("Filtered body:", filteredBody);
 
-  // 3) Update user record
+  // 3) Update itrm record
   const updatedShopItem = await updateShopItemService(
-    req.user.id,
+    req.params.id,
     filteredBody.item_name,
     filteredBody.price
   );
-
-  console.log("Updated user:", updatedShopItem);
 
   if (!updatedShopItem) {
     return next(new AppError("No Shop Item found with that ID", 404));
   }
 
-  res.status(200).json({
-    status: "success",
-    data: {
-      shop_item: updatedShopItem,
-    },
-  });
+  handleResponse(res, 200, "Shop item updated successfully", updatedShopItem);
 });
 
 export const deleteShopItem = catchAsync(async (req, res, next) => {

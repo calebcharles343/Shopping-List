@@ -7,7 +7,7 @@
   },
   "host": "shopping-list-f1b6.onrender.com",
   "basePath": "/api/v1/shopping-list/",
-  "schemes": ["http", "https"],
+  "schemes": "https",
   "consumes": ["application/json", "multipart/form-data"],
   "produces": ["application/json"],
   "securityDefinitions": {

@@ -7,14 +7,7 @@ import {
   updateUserService,
 } from "../models/userModel.js";
 import { catchAsync } from "../utils/catchAsync.js";
-
-const handleResponse = (res, status, message, data = null) => {
-  res.status(status).json({
-    status,
-    message,
-    data,
-  });
-};
+import { handleResponse } from "../utils/handleResponse.js";
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -24,22 +17,6 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
-/*
-export const createUser = catchAsync(async (req, res, next) => {
-  // 1) Create error if user POSTs password data
-  if (req.body.password || req.body.passwordConfirm) {
-    return next(
-      new AppError(
-        "This route is not for password updates. Please use /updateMyPassword.",
-        400
-      )
-    );
-  }
-  const newUser = await createUserService(name, email);
-
-  handleResponse(res, 201, "User created successfully", newUser);
-});
-*/
 export const getAllUsers = catchAsync(async (req, res, next) => {
   const users = await getAllUsersService();
   handleResponse(res, 200, "Users fetched successfully", users);
@@ -87,8 +64,6 @@ export const updateMe = catchAsync(async (req, res, next) => {
     filteredBody.name,
     filteredBody.email
   );
-
-  console.log("Updated user:", updatedUser);
 
   if (!updatedUser) {
     return next(new AppError("No user found with that ID", 404));
