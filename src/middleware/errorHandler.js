@@ -6,6 +6,8 @@ const handleJWTError = () =>
 const handleJWTExpiredError = () =>
   new AppError("Your token has expired! Please log in again.", 401);
 
+const handleDuplicateKey = () => new AppError("Already exits.", 401);
+
 const errorHandler = (err, req, res, next) => {
   const env = process.env.NODE_ENV
     ? process.env.NODE_ENV.trim()
@@ -37,6 +39,7 @@ const errorHandler = (err, req, res, next) => {
 
     if (error.message === "jwt malformed") error = handleJWTError();
     if (error.message === "jwt expired") error = handleJWTExpiredError();
+    if (error.message.includes("duplicate key")) error = handleDuplicateKey();
 
     // Send operational error message; generic message for non-operational errors
     return res.status(error.statusCode).json({

@@ -33,39 +33,32 @@ const limiter = rateLimit({
 });
 app.use("/api", limiter);
 
-// Swagger UI setup
-const options = {
-  customCss:
-    ".swagger-container .swagger-ui { max-width: 1100px; margin: auto; } .swagger-ui .topbar { display: none } .swagger-ui { background: #00000e6; }",
-  customSiteTitle: "SMS API",
-};
-
 app.use(
   "/shopping-list/api-docs",
   swaggerUi.serve,
   swaggerUi.setup(swaggerDocument)
 );
 
-// Routes
-app.use("/api/v1/shopping-list/users", userRouter);
-app.use("/api/v1/shopping-list/items", shopItemsRouter);
-
-// Error handling middleware
-app.use(errorHandler);
-
 // Create tables before starting server
 createUserTable();
 createShopItemsTable();
 
-// Testing PostgreSQL Connection
-pool.query("SELECT current_database(), NOW()", (err, res) => {
-  if (err) {
-    console.error("Error connecting to the database", err);
-  } else {
-    console.log(
-      `Connected to database ${res.rows[0].current_database} at ${res.rows[0].now}`
-    );
-  }
-});
+// Routes
+app.use("/api/v1/shopping-list/users", userRouter);
+app.use("/api/v1/shopping-list/items", shopItemsRouter);
+
+// // Testing PostgreSQL Connection
+// pool.query("SELECT current_database(), NOW()", (err, res) => {
+//   if (err) {
+//     console.error("Error connecting to the database", err);
+//   } else {
+//     console.log(
+//       `Connected to database ${res.rows[0].current_database} at ${res.rows[0].now}`
+//     );
+//   }
+// });
+
+// Error handling middleware
+app.use(errorHandler);
 
 export default app; // Export the app

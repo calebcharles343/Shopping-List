@@ -4,9 +4,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "start:prod": "export NODE_ENV=production && nodemon src/server.js",
-    "start:prod2": "SET NODE_ENV=production & nodemon src/server.js"
+    "dev": "npm run prestart && nodemon src/server.js",
+    "start:prod": "export NODE_ENV=production && node src/server.js",
+    "start:prod2": "SET NODE_ENV=production & nodemon src/server.js",
+    "prestart": "node src/data/migrations.js"
   },
   "keywords": [],
   "author": "",
