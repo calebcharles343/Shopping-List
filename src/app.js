@@ -47,17 +47,6 @@ createShopItemsTable();
 app.use("/api/v1/shopping-list/users", userRouter);
 app.use("/api/v1/shopping-list/items", shopItemsRouter);
 
-// // Testing PostgreSQL Connection
-// pool.query("SELECT current_database(), NOW()", (err, res) => {
-//   if (err) {
-//     console.error("Error connecting to the database", err);
-//   } else {
-//     console.log(
-//       `Connected to database ${res.rows[0].current_database} at ${res.rows[0].now}`
-//     );
-//   }
-// });
-
 // Error handling middleware
 app.use(errorHandler);
 
