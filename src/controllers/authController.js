@@ -112,9 +112,17 @@ export const login = catchAsync(async (req, res, next) => {
 /*////////////////////////////////////// */
 
 export const logout = (req, res) => {
+  /*
   res.cookie("jwt", "", {
     httpOnly: true,
     expires: new Date(Date.now() + 10 * 1000),
+  });
+  */
+
+  res.clearCookie("jwt", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // Match original settings
+    sameSite: "Strict", // Match original settings
   });
 
   handleResponse(res, 200, "Logged out successfully");
@@ -131,7 +139,6 @@ export const protect = catchAsync(async (req, res, next) => {
   ) {
     token = req.headers.authorization.split(" ")[1];
   }
-
   if (!token) {
     return next(
       new AppError("You are not logged in! Please log in to get access.", 401)
