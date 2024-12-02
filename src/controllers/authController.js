@@ -112,17 +112,15 @@ export const login = catchAsync(async (req, res, next) => {
 /*////////////////////////////////////// */
 
 export const logout = (req, res) => {
-  /*
-  res.cookie("jwt", "", {
-    httpOnly: true,
-    expires: new Date(Date.now() + 10 * 1000),
-  });
-  */
-
   res.clearCookie("jwt", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Match original settings
-    sameSite: "Strict", // Match original settings
+    secure: process.env.NODE_ENV === "production", // Secure in production
+    sameSite: process.env.NODE_ENV === "production" ? "Strict" : "Lax", // Adjust for dev
+    path: "/", // Match the original cookie path
+    domain:
+      process.env.NODE_ENV === "production"
+        ? "shopping-list-f1b6.onrender.com"
+        : undefined,
   });
 
   handleResponse(res, 200, "Logged out successfully");
